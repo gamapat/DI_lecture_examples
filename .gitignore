@@ -1,0 +1,6 @@
+*.db
+packages
+x64
+Debug
+Release
+Win32
