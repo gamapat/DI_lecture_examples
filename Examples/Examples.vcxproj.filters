@@ -26,16 +26,13 @@
     <ClCompile Include="Examples.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Original.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OneDependencyOneClass.cpp">
+    <ClCompile Include="PassingObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PassingFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

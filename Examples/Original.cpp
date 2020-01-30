@@ -1,66 +1,46 @@
+#include <stdio.h>
+#include <curl/curl.h>
+#include <string>
 #include <gtest/gtest.h>
-#include <chrono>
-#include <thread>
+#include <filesystem>
+#include <fstream>
 
 namespace
 {
-	class Timer
+size_t WriteData(void* contents, size_t size, size_t nmemb, void* userp) {
+	const size_t realsize = size * nmemb;
+	std::ostream* const stream = static_cast<std::ostream*>(userp);
+	if (stream != nullptr)
 	{
-	public:
-		typedef std::chrono::high_resolution_clock DefaultClock;
-		typedef DefaultClock::duration DefaultDuration;
-		typedef std::chrono::time_point<DefaultClock> DefaultTimePoint;
-		static constexpr DefaultTimePoint UninitializedTimePoint()
-		{
-			return DefaultTimePoint::min();
-		}
-		static DefaultTimePoint CurrentTime()
-		{
-			return DefaultClock::now();
-		}
-
-		template <class DurationT>
-		explicit Timer(DurationT timeout)
-			: m_timeout(std::chrono::duration_cast<DefaultDuration>(timeout))
-			, m_startPoint(decltype(m_startPoint)::min())
-		{}
-		bool Expired() const
-		{
-			return TimeLeft() <= DefaultDuration(0);
-		}
-		void Start()
-		{
-			m_startPoint = CurrentTime();
-		}
-		DefaultDuration TimeLeft() const
-		{
-			return m_timeout - (CurrentTime() - m_startPoint);
-		}
-	private:
-		DefaultDuration m_timeout;
-		DefaultTimePoint m_startPoint;
-	};
-}
-
-TEST(OriginalTimer, TimerIsExpiredAfterSleepForFullDuration)
-{
-	std::chrono::seconds duration(3);
-	Timer timer(duration);
-	timer.Start();
-	EXPECT_FALSE(timer.Expired());
-	std::this_thread::sleep_for(duration);
-	EXPECT_TRUE(timer.Expired());
-}
-
-TEST(OriginalTimer, TimerIsNotExpiredAfterSleepForNotFullDuration)
-{
-    std::chrono::seconds duration(3);
-    Timer timer(duration);
-    timer.Start();
-	EXPECT_FALSE(timer.Expired());
-	for (int i = 0; i < 1000; ++i)
-	{
-		std::this_thread::sleep_for(std::chrono::microseconds(2300));
+		stream->write(static_cast<const char*>(contents), realsize);
 	}
-    EXPECT_FALSE(timer.Expired());
+	return realsize;
+}
+
+int DownloadFile(void) {
+	CURL* curl;
+	CURLcode res;
+	char url[] = "http://localhost/aaa.txt";
+	std::ofstream fs("C:\\bbb.txt");
+	curl = curl_easy_init();
+	if (curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteData);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fs);
+		res = curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+	}
+	return 0;
+}
+}
+
+TEST(OriginalDownloadFile, DownloadFileExpected)
+{
+	std::string fileName = "C:\\bbb.txt";
+	EXPECT_FALSE(std::filesystem::exists(fileName));
+	DownloadFile();
+	ASSERT_TRUE(std::filesystem::exists(fileName));
+	std::ifstream file(fileName);
+	std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	EXPECT_EQ(str, "FileContent");
 }
