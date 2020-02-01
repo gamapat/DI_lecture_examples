@@ -39,6 +39,7 @@ namespace
 				res = curl_easy_perform(curl);
 				curl_easy_cleanup(curl);
 			}
+			return ss.str();
 		}
 	};
 
