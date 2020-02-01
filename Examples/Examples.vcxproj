@@ -159,6 +159,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Examples.cpp" />
+    <ClCompile Include="InheritFromClass.cpp" />
+    <ClCompile Include="InheritFromInterface.cpp" />
     <ClCompile Include="PassingFactory.cpp" />
     <ClCompile Include="PassingObject.cpp" />
     <ClCompile Include="Original.cpp" />
