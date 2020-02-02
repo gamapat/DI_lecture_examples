@@ -72,13 +72,13 @@ namespace
 	};
 }
 
-TEST(TemplateOneTypeOneDependency, Downloader_DownloadData)
+TEST(Template, Downloader_DownloadData)
 {
 	Downloader downloader;
 	EXPECT_EQ(downloader.DownloadData("http://localhost/aaa.txt"), "FileContent");
 }
 
-TEST(TemplateOneTypeOneDependency, FsSaver_SaveToFile)
+TEST(Template, FsSaver_SaveToFile)
 {
 	std::string fileName = "C:\\bbb.txt";
 	EXPECT_FALSE(std::filesystem::exists(fileName));
@@ -90,7 +90,7 @@ TEST(TemplateOneTypeOneDependency, FsSaver_SaveToFile)
 	EXPECT_EQ(str, "FileContent");
 }
 
-TEST(TemplateOneTypeOneDependency, DownloadFileProduceExpectedCalls)
+TEST(Template, DownloadFileProduceExpectedCalls)
 {
 	MockDownloader downloader;
 	MockFsSaver fs;

@@ -50,7 +50,10 @@
     <ClCompile Include="InheritFromClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Templates.cpp">
+    <ClCompile Include="TemplatesOneTypeOneDependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TemplateWithTraits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

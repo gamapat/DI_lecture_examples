@@ -52,8 +52,15 @@ namespace
 		}
 	};
 
-	template <typename TDownloader, typename TFsSaver>
-	int DownloadFile(const TDownloader& downloader, const TFsSaver& fsSaver) {
+	class ProdTraits
+	{
+	public:
+		using Downloader = Downloader;
+		using Fs = FsSaver;
+	};
+
+	template <class T>
+	int DownloadFile(const typename T::Downloader& downloader, const typename T::Fs& fsSaver) {
 		const auto& downloadedData = downloader.DownloadData("http://localhost/aaa.txt");
 		fsSaver.SaveToFile(downloadedData, "C:\\bbb.txt");
 		return 0;
@@ -70,15 +77,21 @@ namespace
 	public:
 		MOCK_CONST_METHOD2(SaveToFile, void(const std::string&, const std::string&));
 	};
+
+	struct TestTraits
+	{
+		using Downloader = MockDownloader;
+		using Fs = MockFsSaver;
+	};
 }
 
-TEST(TemplateOneTypeOneDependency, Downloader_DownloadData)
+TEST(TemplateWithTraits, Downloader_DownloadData)
 {
 	Downloader downloader;
 	EXPECT_EQ(downloader.DownloadData("http://localhost/aaa.txt"), "FileContent");
 }
 
-TEST(TemplateOneTypeOneDependency, FsSaver_SaveToFile)
+TEST(TemplateWithTraits, FsSaver_SaveToFile)
 {
 	std::string fileName = "C:\\bbb.txt";
 	EXPECT_FALSE(std::filesystem::exists(fileName));
@@ -90,11 +103,11 @@ TEST(TemplateOneTypeOneDependency, FsSaver_SaveToFile)
 	EXPECT_EQ(str, "FileContent");
 }
 
-TEST(TemplateOneTypeOneDependency, DownloadFileProduceExpectedCalls)
+TEST(TemplateWithTraits, DownloadFileProduceExpectedCalls)
 {
-	MockDownloader downloader;
-	MockFsSaver fs;
+	TestTraits::Downloader downloader;
+	TestTraits::Fs fs;
 	EXPECT_CALL(downloader, DownloadData("http://localhost/aaa.txt")).WillOnce(Return("FileContent"));
 	EXPECT_CALL(fs, SaveToFile("FileContent", "C:\\bbb.txt"));
-	DownloadFile(downloader, fs);
+	DownloadFile<TestTraits>(downloader, fs);
 }
