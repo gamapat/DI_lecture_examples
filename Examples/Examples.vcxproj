@@ -172,6 +172,7 @@
     </ClCompile>
     <ClCompile Include="TemplatesOneTypeOneDependency.cpp" />
     <ClCompile Include="TemplateWithTraits.cpp" />
+    <ClCompile Include="UniquePtrPassing.cpp" />
     <ClCompile Include="UseSingleton.cpp" />
   </ItemGroup>
   <ItemGroup>

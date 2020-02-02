@@ -56,6 +56,9 @@
     <ClCompile Include="TemplateWithTraits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UniquePtrPassing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
