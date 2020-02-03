@@ -155,10 +155,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Downloader.h" />
+    <ClInclude Include="FsWrapper.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Downloader.cpp" />
     <ClCompile Include="Examples.cpp" />
+    <ClCompile Include="FsWrapper.cpp" />
     <ClCompile Include="InheritFromClass.cpp" />
     <ClCompile Include="InheritFromInterface.cpp" />
     <ClCompile Include="PassingFactory.cpp" />

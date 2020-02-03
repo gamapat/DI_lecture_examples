@@ -42,7 +42,7 @@ namespace
 		}
 	};
 
-	class FsSaver
+	class FsWrapper
 	{
 	public:
 		virtual void SaveToFile(const std::string& data, const std::string& filePath) const
@@ -52,10 +52,10 @@ namespace
 		}
 	};
 
-	template <typename TDownloader, typename TFsSaver>
-	int DownloadFile(const TDownloader& downloader, const TFsSaver& fsSaver) {
+	template <typename TDownloader, typename TFsWrapper>
+	int DownloadFile(const TDownloader& downloader, const TFsWrapper& fs) {
 		const auto& downloadedData = downloader.DownloadData("http://localhost/aaa.txt");
-		fsSaver.SaveToFile(downloadedData, "C:\\bbb.txt");
+		fs.SaveToFile(downloadedData, "C:\\bbb.txt");
 		return 0;
 	}
 
@@ -65,7 +65,7 @@ namespace
 		MOCK_CONST_METHOD1(DownloadData, std::string(const std::string&));
 	};
 
-	class MockFsSaver
+	class MockFsWrapper
 	{
 	public:
 		MOCK_CONST_METHOD2(SaveToFile, void(const std::string&, const std::string&));
@@ -78,11 +78,11 @@ TEST(TemplateOneTypeOneDependency, Downloader_DownloadData)
 	EXPECT_EQ(downloader.DownloadData("http://localhost/aaa.txt"), "FileContent");
 }
 
-TEST(TemplateOneTypeOneDependency, FsSaver_SaveToFile)
+TEST(TemplateOneTypeOneDependency, FsWrapper_SaveToFile)
 {
 	std::string fileName = "C:\\bbb.txt";
 	EXPECT_FALSE(std::filesystem::exists(fileName));
-	FsSaver fs;
+	FsWrapper fs;
 	fs.SaveToFile("FileContent", fileName);
 	ASSERT_TRUE(std::filesystem::exists(fileName));
 	std::ifstream file(fileName);
@@ -93,7 +93,7 @@ TEST(TemplateOneTypeOneDependency, FsSaver_SaveToFile)
 TEST(TemplateOneTypeOneDependency, DownloadFileProduceExpectedCalls)
 {
 	MockDownloader downloader;
-	MockFsSaver fs;
+	MockFsWrapper fs;
 	EXPECT_CALL(downloader, DownloadData("http://localhost/aaa.txt")).WillOnce(Return("FileContent"));
 	EXPECT_CALL(fs, SaveToFile("FileContent", "C:\\bbb.txt"));
 	DownloadFile(downloader, fs);
