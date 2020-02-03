@@ -53,7 +53,7 @@ namespace
 		}
 	};
 
-	int DownloadFile(std::unique_ptr<Downloader> downloader, std::unique_ptr<FsSaver> fsSaver) {
+	int DownloadFile(std::shared_ptr<Downloader> downloader, std::shared_ptr<FsSaver> fsSaver) {
 		const auto& downloadedData = downloader->DownloadData("http://localhost/aaa.txt");
 		fsSaver->SaveToFile(downloadedData, "C:\\bbb.txt");
 		return 0;
@@ -62,9 +62,9 @@ namespace
 	class ClassToDownloadFile
 	{
 	public:
-		ClassToDownloadFile(std::unique_ptr<Downloader> downloader, std::unique_ptr<FsSaver> fsSaver) 
-			: m_downloader(std::move(downloader))
-			, m_fsSaver(std::move(fsSaver)) 
+		ClassToDownloadFile(std::shared_ptr<Downloader> downloader, std::shared_ptr<FsSaver> fsSaver)
+			: m_downloader(downloader)
+			, m_fsSaver(fsSaver)
 		{}
 
 		int DownloadFile()
@@ -75,8 +75,8 @@ namespace
 		}
 
 	private:
-		std::unique_ptr<Downloader> m_downloader;
-		std::unique_ptr<FsSaver> m_fsSaver;
+		std::shared_ptr<Downloader> m_downloader;
+		std::shared_ptr<FsSaver> m_fsSaver;
 	};
 
 	class MockDownloader : public Downloader
@@ -91,32 +91,30 @@ namespace
 		MOCK_CONST_METHOD2(SaveToFile, void(const std::string&, const std::string&));
 	};
 
-	class UniquePtrPassingFixture : public Test
+	class SharedPtrPassingFixture : public Test
 	{
 	public:
 		void SetUp()
 		{
-			auto downloader = std::make_unique<MockDownloader>();
-			m_downloader = downloader.get();
-			auto fs = std::make_unique<MockFsSaver>();
-			m_fs = fs.get();
+			m_downloader = std::make_shared<MockDownloader>();
+			m_fs = std::make_shared<MockFsSaver>();
 
-			auto downloadFile = std::make_unique<ClassToDownloadFile>(std::move(downloader), std::move(fs));
+			auto downloadFile = std::make_unique<ClassToDownloadFile>(m_downloader, m_fs);
 		}
 	protected:
-		MockDownloader* m_downloader;
-		MockFsSaver* m_fs;
+		std::shared_ptr<MockDownloader> m_downloader;
+		std::shared_ptr<MockFsSaver> m_fs;
 		std::unique_ptr<ClassToDownloadFile> m_downloadFile; //unique_ptr to create object with delay
 	};
 }
 
-TEST(UniquePtrPassing, Downloader_DownloadData)
+TEST(SharedPtrPassing, Downloader_DownloadData)
 {
 	Downloader downloader;
 	EXPECT_EQ(downloader.DownloadData("http://localhost/aaa.txt"), "FileContent");
 }
 
-TEST(UniquePtrPassing, FsSaver_SaveToFile)
+TEST(SharedPtrPassing, FsSaver_SaveToFile)
 {
 	std::string fileName = "C:\\bbb.txt";
 	EXPECT_FALSE(std::filesystem::exists(fileName));
@@ -128,16 +126,16 @@ TEST(UniquePtrPassing, FsSaver_SaveToFile)
 	EXPECT_EQ(str, "FileContent");
 }
 
-TEST(UniquePtrPassing, DownloadFileProduceExpectedCalls)
+TEST(SharedPtrPassing, DownloadFileProduceExpectedCalls)
 {
-	auto downloader = std::make_unique<MockDownloader>();
-	auto fs = std::make_unique<MockFsSaver>();
+	auto downloader = std::make_shared<MockDownloader>();
+	auto fs = std::make_shared<MockFsSaver>();
 	EXPECT_CALL(*downloader, DownloadData("http://localhost/aaa.txt")).WillOnce(Return("FileContent"));
 	EXPECT_CALL(*fs, SaveToFile("FileContent", "C:\\bbb.txt"));
-	DownloadFile(std::move(downloader), std::move(fs));
+	DownloadFile(downloader, fs);
 }
 
-TEST_F(UniquePtrPassingFixture, DownloadFileProduceExpectedCalls_ClassVersion)
+TEST_F(SharedPtrPassingFixture, DownloadFileProduceExpectedCalls_ClassVersion)
 {
 	EXPECT_CALL(*m_downloader, DownloadData("http://localhost/aaa.txt")).WillOnce(Return("FileContent"));
 	EXPECT_CALL(*m_fs, SaveToFile("FileContent", "C:\\bbb.txt"));
