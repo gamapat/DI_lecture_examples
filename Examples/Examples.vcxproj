@@ -181,6 +181,7 @@
     <ClCompile Include="TemplateWithTraits.cpp" />
     <ClCompile Include="UniquePtrPassing.cpp" />
     <ClCompile Include="UseSingleton.cpp" />
+    <ClCompile Include="WeakPtrPassing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
