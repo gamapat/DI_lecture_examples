@@ -66,7 +66,7 @@ namespace
             m_downloader = std::make_shared<MockDownloader>();
             m_fs = std::make_shared<MockFsWrapper>();
 
-            auto downloadFile = std::make_unique<ClassToDownloadFile>(m_downloader, m_fs);
+            m_downloadFile = std::make_unique<ClassToDownloadFile>(m_downloader, m_fs);
         }
     protected:
         std::shared_ptr<MockDownloader> m_downloader;

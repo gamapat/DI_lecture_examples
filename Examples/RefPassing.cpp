@@ -51,7 +51,7 @@ namespace
     public:
         void SetUp()
         {
-            auto downloadFile = std::make_unique<ClassToDownloadFile>(m_downloader, m_fs);
+            m_downloadFile = std::make_unique<ClassToDownloadFile>(m_downloader, m_fs);
         }
     protected:
         MockDownloader m_downloader;

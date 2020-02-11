@@ -56,7 +56,7 @@ namespace
             auto fs = std::make_unique<MockFsWrapper>();
             m_fs = fs.get();
 
-            auto downloadFile = std::make_unique<ClassToDownloadFile>(std::move(downloader), std::move(fs));
+            m_downloadFile = std::make_unique<ClassToDownloadFile>(std::move(downloader), std::move(fs));
         }
     protected:
         MockDownloader* m_downloader;

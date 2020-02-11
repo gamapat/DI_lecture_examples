@@ -6,7 +6,6 @@
 namespace
 {
     size_t WriteData(void* contents, size_t size, size_t nmemb, void* userp) {
-
         const size_t realsize = size * nmemb;
         std::ostream* const stream = static_cast<std::ostream*>(userp);
         if (stream != nullptr)
